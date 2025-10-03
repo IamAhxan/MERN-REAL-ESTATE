@@ -5,27 +5,35 @@ import About from './src/pages/About'
 import SignIn from './src/pages/SignIn'
 import SignUp from './src/pages/SignUp'
 import Profile from './src/pages/Profile'
+import AppLayout from './src/pages/AppLayout'
 
-const routes = createBrowserRouter ([{
+const routes = createBrowserRouter([
+{
     path: '/',
-    element: <Home />
-},
-{
-    path: '/about',
-    element: <About />
-},
-{
-    path: '/sign-in',
-    element: <SignIn />
-},
-{
-    path: '/sign-out',
-    element: <SignUp />
-},
-{
-    path: '/profile',
-    element: <Profile />
-}
+    element: <AppLayout />,
+    children: [
+
+
+    {
+        path: '/',
+        element: <Home />
+    },
+    {
+        path: '/about',
+        element: <About />
+    },
+    {
+        path: '/sign-in',
+        element: <SignIn />
+    },
+    {
+        path: '/sign-out',
+        element: <SignUp />
+    },
+    {
+        path: '/profile',
+        element: <Profile />
+    }]}
 ])
 
 export default routes
