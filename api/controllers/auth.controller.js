@@ -10,7 +10,7 @@ try {
         await newUser.save()
     res.status(201).json("User Created Successfully")
 } catch (error) {
-    res.status(500).json(error.message)
+   next(error)
 }
 
 }
