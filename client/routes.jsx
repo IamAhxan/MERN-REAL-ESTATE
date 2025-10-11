@@ -5,6 +5,7 @@ import About from './src/pages/About'
 import SignIn from './src/pages/SignIn'
 import SignUp from './src/pages/SignUp'
 import Profile from './src/pages/Profile'
+import PrivateRoute from './src/components/PrivateRoute'
 import AppLayout from './src/pages/AppLayout'
 
 const routes = createBrowserRouter([
@@ -31,8 +32,13 @@ const routes = createBrowserRouter([
         element: <SignUp />
     },
     {
-        path: '/profile',
-        element: <Profile />
+        element: <PrivateRoute />,
+        children: [{
+             path: '/profile',
+            element: <Profile />
+    }]
+           
+        
     }]}
 ])
 
