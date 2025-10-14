@@ -1,7 +1,8 @@
 import { useSelector } from "react-redux"
 import { useRef, useEffect, useState } from "react"
-import { setDownloadURl, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
-import { app } from '../firebase'
+
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dvbt4rlof/image/upload"
+const CLOUDINARY_UPLOAD_PRESET = "real-estate"
 
 const Profile = () => {
   const fileRef = useRef(null)
@@ -11,40 +12,47 @@ const Profile = () => {
   const [file, setFile] = useState(undefined)
   const [formData, setFormData] = useState({})
 
-  const handleFileUpload = (file) => {
-    const storage = getStorage(app);
-    const fileName = new Date().getTime() + file.name;
-    const storageRef = ref(storage, fileName)
-    const uploadTask = uploadBytesResumable(storageRef, file);
+  const handleFileUpload = async (file) => {
+    setFileUploadError(false)
+    setFilePerc(0)
+    const formDataUpload = new FormData()
+    formDataUpload.append("file", file)
+    formDataUpload.append("upload_preset", CLOUDINARY_UPLOAD_PRESET)
 
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done')
+    const xhr = new XMLHttpRequest()
+    xhr.open("POST", CLOUDINARY_URL)
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = (event.loaded / event.total) * 100
         setFilePerc(Math.round(progress))
-      },
-      (error) => {
-        setFileUploadError(true)
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFormData({ ...formData, avatar: downloadURL })
-        })
       }
-    )
+    }
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText)
+        setFormData(prev => ({ ...prev, avatar: response.secure_url }))
+        setFilePerc(100)
+      } else {
+        setFileUploadError(true)
+      }
+    }
+    xhr.onerror = () => setFileUploadError(true)
+    xhr.send(formDataUpload)
   }
+
   useEffect(() => {
     if (file) {
-      handleFileUpload(file);
+      handleFileUpload(file)
     }
   }, [file])
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className='text-3xl font-semibold text-center my-7'>
         Profile
       </h1>
       <form className="flex flex-col gap-3">
-        <input onChange={(e) => setFile(e.target.file[0])} hidden type="file" ref={fileRef} accept="image/*" />
+        <input onChange={(e) => setFile(e.target.files[0])} hidden type="file" ref={fileRef} accept="image/*" />
         <img onClick={() => fileRef.current.click()} src={formData.avatar || currentUser.avatar} alt="profile" className="rounded-full h-24 w-24 object-cover cursor-pointer self-center" />
         {
           fileUploadError ? (
