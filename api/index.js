@@ -1,33 +1,30 @@
-import express from 'express'
-import mongoose from 'mongoose';
+import express from 'express';
 import dotenv from 'dotenv';
-import userRouter from './routes/user.route.js';
-import connectDB from './configs/mongodb.connect.js';
-import authRoutes from './routes/auth.route.js';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import connectDB from './configs/mongodb.connect.js';
+import userRouter from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
 
-dotenv.config() //env
+dotenv.config();
+const app = express();
 
-const app = express(); //express
-app.use(express.json())
-app.use(cookieParser() )
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true, // ✅ allow cookies
+}));
+app.use(cookieParser());
+app.use(express.json());
 
-connectDB() //connect Database mongoDB
+connectDB();
 
-app.use('/api/user', userRouter) //User Router
-
-app.use("/api/auth", authRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/user", userRouter);
 
 app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    const message = err.message || 'Internal Server Error';
-    return res.status(statusCode).json({
-        success: false,
-        message,
-        statusCode
-    })
-})
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  res.status(statusCode).json({ success: false, message, statusCode });
+});
 
-app.listen(3000, () => {
-    console.log('server is running on port 3000!!!')
-})
+app.listen(3000, () => console.log("✅ Server running on port 3000"));
