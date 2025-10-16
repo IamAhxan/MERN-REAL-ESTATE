@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { useRef, useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
-import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess } from "./../../redux/user/userSlice.js"
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart, signOutUserFailure, signOutUserSuccess } from "./../../redux/user/userSlice.js"
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dvbt4rlof/image/upload"
 const CLOUDINARY_UPLOAD_PRESET = "real-estate"
@@ -58,7 +58,7 @@ const Profile = () => {
   dispatch(updateUserStart());
   try {
     const res = await fetch(
-      `http://localhost:3000/api/user/update/${currentUser._id}`,
+      `/api/user/update/${currentUser._id}`,
       {
         method: "POST", // or "PUT" if your backend expects it
         headers: {
@@ -82,7 +82,7 @@ const Profile = () => {
 const handleDelete = async () => {
   try {
     dispatch(deleteUserStart())
-    const res = await fetch(`http://localhost:3000/api/user/delete/${currentUser._id}`, {
+    const res = await fetch(`/api/user/delete/${currentUser._id}`, {
       method: 'DELETE',
       credentials: 'include'
     });
@@ -94,6 +94,19 @@ const handleDelete = async () => {
     dispatch(deleteUserSuccess(data))
   } catch (error) {
     dispatch(deleteUserFailure(error.message))
+  }
+}
+const handleSignout = async () => {
+  try {
+    dispatch(signOutUserStart())
+    const res = await fetch('/api/auth/signout')
+    const data = await res.json()
+    if(data.success === false){
+      return
+    }
+    dispatch(signOutUserSuccess(data))
+  } catch (error) {
+    dispatch(signOutUserFailure(error.message))
   }
 }
 
@@ -122,7 +135,7 @@ const handleDelete = async () => {
       </form>
       <div className="flex justify-between">
         <span onClick={handleDelete} className="text-red-700 cursor-pointer">Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Sign out</span>
+        <span onClick={handleSignout} className="text-red-700 cursor-pointer">Sign out</span>
       </div>
       <p className="text-red-700 mt-5">{error? error : ""}</p>
       <p className="text-green-700 mt-5">{updateSuccess? 'User Updated Successfully' : ""}</p>
