@@ -7,39 +7,45 @@ import SignUp from './src/pages/SignUp'
 import Profile from './src/pages/Profile'
 import PrivateRoute from './src/components/PrivateRoute'
 import AppLayout from './src/pages/AppLayout'
+import CreateListing from './src/pages/CreateListing'
 
 const routes = createBrowserRouter([
-{
-    path: '/',
-    element: <AppLayout />,
-    children: [
-
-
     {
         path: '/',
-        element: <Home />
-    },
-    {
-        path: '/about',
-        element: <About />
-    },
-    {
-        path: '/sign-in',
-        element: <SignIn />
-    },
-    {
-        path: '/sign-up',
-        element: <SignUp />
-    },
-    {
-        element: <PrivateRoute />,
-        children: [{
-             path: '/profile',
-            element: <Profile />
-    }]
-           
-        
-    }]}
+        element: <AppLayout />,
+        children: [
+
+
+            {
+                path: '/',
+                element: <Home />
+            },
+            {
+                path: '/about',
+                element: <About />
+            },
+            {
+                path: '/sign-in',
+                element: <SignIn />
+            },
+            {
+                path: '/sign-up',
+                element: <SignUp />
+            },
+            {
+                element: <PrivateRoute />,
+                children: [{
+                    path: '/profile',
+                    element: <Profile />
+                },
+                {
+                    path: '/create-listing',
+                    element: <CreateListing />
+                }]
+
+
+            }]
+    }
 ])
 
 export default routes
