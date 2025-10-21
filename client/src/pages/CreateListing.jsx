@@ -6,11 +6,14 @@ const CreateListing = () => {
     imageUrls: []
   })
 const [imageUploadError, setImageUploadError] = useState(null)
+const [uploading, setUploading] = useState(false)
   // Cloudinary config (Vite env)
   const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL
   const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
 
   const handleImageSubmit = async () => {
+    
+      setUploading(true)
     setImageUploadError('')
     if (!files || files.length === 0) return
     if (files.length > 6) {
@@ -30,11 +33,14 @@ const [imageUploadError, setImageUploadError] = useState(null)
       console.error('Image upload error', err)
         const message = err?.message || 'Image upload failed'
       setImageUploadError(message)
+      
     }
+          setUploading(false)
   }
 
   const storeImage = async (file) => {
     if (!CLOUDINARY_URL || !UPLOAD_PRESET) {
+        
     throw new Error(
         'Cloudinary config missing. Set VITE_CLOUDINARY_URL and VITE_CLOUDINARY_UPLOAD_PRESET in your .env'
       )
@@ -53,11 +59,14 @@ const [imageUploadError, setImageUploadError] = useState(null)
       const text = await res.text()
        throw new Error(`Cloudinary upload failed: ${text}`)
        setImageUploadError('Error Occurred During Image Upload')
+       
     }
 
     const json = await res.json()
     return json.secure_url || json.url
     setImageUploadError(null)
+    
+
   }
     const handleRemoveImage = (i) => {
         setFormData({
@@ -127,7 +136,7 @@ const [imageUploadError, setImageUploadError] = useState(null)
           </p>
           <div className='flex gap-4'>
             <input onChange={(e) => setFiles(Array.from(e.target.files))} type='file' id='images' accept='image/*' multiple className='p-3 border border-gray-300 rounded w-full' />
-            <button type='button' onClick={handleImageSubmit} className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'>Upload</button>
+            <button disabled={uploading} type='button' onClick={handleImageSubmit} className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'>{uploading? '...uploading' : 'upload'}</button>
           </div>
           <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>Create Listing</button>
 
