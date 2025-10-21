@@ -5,15 +5,17 @@ const CreateListing = () => {
   const [formData, setFormData] = useState({
     imageUrls: []
   })
-
+const [imageUploadError, setImageUploadError] = useState(null)
   // Cloudinary config (Vite env)
   const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL
   const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
 
   const handleImageSubmit = async () => {
+    setImageUploadError('')
     if (!files || files.length === 0) return
     if (files.length > 6) {
-      console.error('Maximum 6 images allowed')
+      const msg = 'Maximum 6 images allowed'
+      setImageUploadError(msg)
       return
     }
 
@@ -26,12 +28,14 @@ const CreateListing = () => {
       // If you want to reset the file input in the DOM, do that via a ref
     } catch (err) {
       console.error('Image upload error', err)
+        const message = err?.message || 'Image upload failed'
+      setImageUploadError(message)
     }
   }
 
   const storeImage = async (file) => {
     if (!CLOUDINARY_URL || !UPLOAD_PRESET) {
-      throw new Error(
+    throw new Error(
         'Cloudinary config missing. Set VITE_CLOUDINARY_URL and VITE_CLOUDINARY_UPLOAD_PRESET in your .env'
       )
     }
@@ -47,13 +51,20 @@ const CreateListing = () => {
 
     if (!res.ok) {
       const text = await res.text()
-      throw new Error(`Cloudinary upload failed: ${text}`)
+       throw new Error(`Cloudinary upload failed: ${text}`)
+       setImageUploadError('Error Occurred During Image Upload')
     }
 
     const json = await res.json()
     return json.secure_url || json.url
+    setImageUploadError(null)
   }
-
+    const handleRemoveImage = (i) => {
+        setFormData({
+            ...formData,
+            imageUrls: formData.imageUrls.filter((_, index) => index !== i),
+        })
+    }
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text3xl font-semibold text-center my-7'>Create a Listing</h1>
@@ -125,12 +136,16 @@ const CreateListing = () => {
               <p className='font-medium'>Uploaded images:</p>
               <div className='flex gap-2 flex-wrap mt-2'>
                 {formData.imageUrls.map((u, i) => (
-                  <img key={i} src={u} alt={`uploaded-${i}`} className='h-20 w-20 object-cover rounded' />
+                    <div key={i} className='flex justify-between p-3 border items-center w-full'>
+                  <img  src={u} alt={`uploaded-${i}`} className='h-20 w-20 object-cover rounded' />
+                  <button onClick={()=>handleRemoveImage(i)} className='text-red-700 rounded-lg uppercase hover:opacity-75'>Delete</button>
+                  </div>
                 ))}
               </div>
             </div>
           )}
         </div>
+        <p className='text-red-700'>{imageUploadError}</p>
       </form>
     </main>
   )
