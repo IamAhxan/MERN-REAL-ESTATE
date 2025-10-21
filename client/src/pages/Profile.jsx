@@ -4,8 +4,7 @@ import { useDispatch } from "react-redux"
 import {Link} from 'react-router-dom'
 import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart, signOutUserFailure, signOutUserSuccess } from "./../../redux/user/userSlice.js"
 
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dvbt4rlof/image/upload"
-const CLOUDINARY_UPLOAD_PRESET = "real-estate"
+
 
 const Profile = () => {
   const fileRef = useRef(null)
@@ -22,10 +21,10 @@ const Profile = () => {
     setFilePerc(0)
     const formDataUpload = new FormData()
     formDataUpload.append("file", file)
-    formDataUpload.append("upload_preset", CLOUDINARY_UPLOAD_PRESET)
+    formDataUpload.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
 
     const xhr = new XMLHttpRequest()
-    xhr.open("POST", CLOUDINARY_URL)
+    xhr.open("POST", import.meta.env.VITE_CLOUDINARY_URL)
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
         const progress = (event.loaded / event.total) * 100
