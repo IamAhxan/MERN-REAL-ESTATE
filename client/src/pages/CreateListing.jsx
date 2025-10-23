@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
 
 
 const CreateListing = () => {
   const [files, setFiles] = useState([])
-  const {currentUser} = useSelector(state=>state.user)
+  const { currentUser } = useSelector(state => state.user)
   const [formData, setFormData] = useState({
-    imageUrls: [],
+    imageURLs: [],
     name: '',
     description: '',
     address: '',
@@ -17,7 +17,7 @@ const CreateListing = () => {
     furnished: false,
     offer: false,
     regularPrice: 50,
-    discountedPrice: 50,
+    discountPrice: 50,
 
   })
   const [imageUploadError, setImageUploadError] = useState(null)
@@ -42,7 +42,7 @@ const CreateListing = () => {
     try {
       const promises = files.map((f) => storeImage(f))
       const urls = await Promise.all(promises)
-      setFormData((prev) => ({ ...prev, imageUrls: prev.imageUrls.concat(urls) }))
+      setFormData((prev) => ({ ...prev, imageURLs: prev.imageURLs.concat(urls) }))
       // optionally clear selected files:
       setFiles([])
       setUploading(false)
@@ -90,7 +90,7 @@ const CreateListing = () => {
   const handleRemoveImage = (i) => {
     setFormData({
       ...formData,
-      imageUrls: formData.imageUrls.filter((_, index) => index !== i),
+      imageURLs: formData.imageURLs.filter((_, index) => index !== i),
     })
   }
 
@@ -119,10 +119,11 @@ const CreateListing = () => {
     try {
       setLoading(true)
       setError(false)
-      const res = await fetch('/api/listing/create',{
+      const res = await fetch('/api/listing/create', {
         method: 'POST',
-        headers:{
-          'content-type' : 'application/json'
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`,
         },
         body: JSON.stringify({
           ...formData,
@@ -132,7 +133,7 @@ const CreateListing = () => {
       const data = await res.json()
       setLoading(false)
 
-      if(data.success === false){
+      if (data.success === false) {
         setError(data.message)
       }
 
@@ -188,7 +189,7 @@ const CreateListing = () => {
               </div>
             </div>
             <div className='flex items-center gap-2'>
-              <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountedPrice' min='50' max='1000000' onChange={handleChange} value={formData.discountedPrice} />
+              <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountPrice' min='50' max='1000000' onChange={handleChange} value={formData.discountPrice} />
               <div className='flex flex-col items-center'>
                 <p>Discounted Price</p>
                 <span>($ / Months)</span>
@@ -205,15 +206,15 @@ const CreateListing = () => {
             <input onChange={(e) => setFiles(Array.from(e.target.files))} type='file' id='images' accept='image/*' multiple className='p-3 border border-gray-300 rounded w-full' />
             <button disabled={uploading} type='button' onClick={handleImageSubmit} className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'>{uploading ? '...uploading' : 'upload'}</button>
           </div>
-          <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading? '...Loading' : 'Create Listing'}</button>
+          <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? '...Loading' : 'Create Listing'}</button>
           {error && <p className='text-red-700'>{error}</p>}
 
 
-          {formData.imageUrls && formData.imageUrls.length > 0 && (
+          {formData.imageURLs && formData.imageURLs.length > 0 && (
             <div className='mt-3'>
               <p className='font-medium'>Uploaded images:</p>
               <div className='flex gap-2 flex-wrap mt-2'>
-                {formData.imageUrls.map((u, i) => (
+                {formData.imageURLs.map((u, i) => (
                   <div key={i} className='flex justify-between p-3 border items-center w-full'>
                     <img src={u} alt={`uploaded-${i}`} className='h-20 w-20 object-cover rounded' />
                     <button onClick={() => handleRemoveImage(i)} className='text-red-700 rounded-lg uppercase hover:opacity-75'>Delete</button>
