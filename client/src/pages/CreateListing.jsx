@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 
 const CreateListing = () => {
@@ -17,7 +18,7 @@ const CreateListing = () => {
     furnished: false,
     offer: false,
     regularPrice: 50,
-    discountPrice: 0,
+    discountedPrice: 0,
 
   })
   const [imageUploadError, setImageUploadError] = useState(null)
@@ -27,6 +28,8 @@ const CreateListing = () => {
   // Cloudinary config (Vite env)
   const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL
   const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+
+  const navigate = useNavigate()
 
   const handleImageSubmit = async () => {
 
@@ -121,7 +124,7 @@ const CreateListing = () => {
         return setError('Please upload at least one image')
       };
 
-      if(formData.regularPrice < +formData.discountPrice){
+      if(formData.regularPrice < +formData.discountedPrice){
         return setError('Discount price must be less than regular price')
       };
 
@@ -146,7 +149,7 @@ const CreateListing = () => {
       if (data.success === false) {
         setError(data.message)
       }
-
+     navigate(`/listing/${data.listing._id}`)
     } catch (error) {
       setError(data?.message)
       setLoading(false)
@@ -200,7 +203,7 @@ const CreateListing = () => {
             </div>
             {(formData.offer) && (
             <div className='flex items-center gap-2'>
-              <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountPrice' min='0' max='1000000' onChange={handleChange} value={formData.discountPrice} />
+              <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountedPrice' min='0' max='1000000' onChange={handleChange} value={formData.discountedPrice} />
               <div className='flex flex-col items-center'>
                 <p>Discounted Price</p>
                 <span>($ / Months)</span>
