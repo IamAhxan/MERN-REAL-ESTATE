@@ -17,7 +17,7 @@ const CreateListing = () => {
     furnished: false,
     offer: false,
     regularPrice: 50,
-    discountPrice: 50,
+    discountPrice: 0,
 
   })
   const [imageUploadError, setImageUploadError] = useState(null)
@@ -117,6 +117,16 @@ const CreateListing = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if(formData.imageURLs.length === 0){
+        return setError('Please upload at least one image')
+      };
+
+      if(formData.regularPrice < +formData.discountPrice){
+        return setError('Discount price must be less than regular price')
+      };
+
+      
+
       setLoading(true)
       setError(false)
       const res = await fetch('/api/listing/create', {
@@ -188,13 +198,15 @@ const CreateListing = () => {
                 <span>($ / Months)</span>
               </div>
             </div>
+            {(formData.offer) && (
             <div className='flex items-center gap-2'>
-              <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountPrice' min='50' max='1000000' onChange={handleChange} value={formData.discountPrice} />
+              <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountPrice' min='0' max='1000000' onChange={handleChange} value={formData.discountPrice} />
               <div className='flex flex-col items-center'>
                 <p>Discounted Price</p>
                 <span>($ / Months)</span>
               </div>
             </div>
+            )}
           </div>
         </div>
 
@@ -206,7 +218,7 @@ const CreateListing = () => {
             <input onChange={(e) => setFiles(Array.from(e.target.files))} type='file' id='images' accept='image/*' multiple className='p-3 border border-gray-300 rounded w-full' />
             <button disabled={uploading} type='button' onClick={handleImageSubmit} className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'>{uploading ? '...uploading' : 'upload'}</button>
           </div>
-          <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? '...Loading' : 'Create Listing'}</button>
+          <button disabled={loading || uploading} className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? '...Loading' : 'Create Listing'}</button>
           {error && <p className='text-red-700'>{error}</p>}
 
 
