@@ -135,43 +135,55 @@ const UpdateListing = () => {
     }
   }
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if(formData.imageURLs.length === 0){
-        return setError('Please upload at least one image')
-      };
+  e.preventDefault();
 
-      if(formData.regularPrice < +formData.discountedPrice){
-        return setError('Discount price must be less than regular price')
-      };
-
-      
-
-      setLoading(true)
-      setError(false)
-      const res = await fetch(`/api/listing/update/${params.listingId}`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'Authorization': `Bearer ${currentUser.token}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          userRef: currentUser._id
-        })
-      });
-      const data = await res.json()
-      setLoading(false)
-
-      if (data.success === false) {
-        setError(data.message)
-      }
-     navigate(`/listing/${data.listing._id}`)
-    } catch (error) {
-      setError(data?.message)
-      setLoading(false)
+  try {
+    if (formData.imageURLs.length === 0) {
+      return setError("Please upload at least one image");
     }
+
+    if (formData.regularPrice < +formData.discountedPrice) {
+      return setError("Discount price must be less than regular price");
+    }
+
+    setLoading(true);
+    setError(false);
+
+    const res = await fetch(`/api/listing/update/${params.listingId}`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+      body: JSON.stringify({
+        ...formData,
+        userRef: currentUser._id,
+      }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+    console.log("Update response:", data);
+
+    if (!res.ok || data.success === false) {
+      return setError(data.message || "Failed to update listing");
+    }
+
+    const listingId = data.listing?._id || data._id || data.updatedListing?._id;
+
+    if (listingId) {
+      navigate(`/listing/${listingId}`);
+    } else {
+      console.warn("No listing ID found in response:", data);
+      navigate("/");
+    }
+  } catch (error) {
+    console.error("Error updating listing:", error);
+    setError(error.message);
+    setLoading(false);
   }
+};
+
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text3xl font-semibold text-center my-7'>Update a Listing</h1>

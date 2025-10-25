@@ -9,6 +9,7 @@ import PrivateRoute from './src/components/PrivateRoute'
 import AppLayout from './src/pages/AppLayout'
 import CreateListing from './src/pages/CreateListing'
 import UpdateListing from './src/pages/UpdateListing'
+import Listing from './src/pages/Listing'
 
 const routes = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ const routes = createBrowserRouter([
             {
                 path: '/sign-up',
                 element: <SignUp />
+            },
+            {
+                path: '/listing/:listingId',
+                element: <Listing />
             },
             {
                 element: <PrivateRoute />,
