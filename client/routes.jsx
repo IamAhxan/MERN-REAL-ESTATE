@@ -10,6 +10,7 @@ import AppLayout from './src/pages/AppLayout'
 import CreateListing from './src/pages/CreateListing'
 import UpdateListing from './src/pages/UpdateListing'
 import Listing from './src/pages/Listing'
+import Search from './src/pages/Search'
 
 const routes = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const routes = createBrowserRouter([
             {
                 path: '/listing/:listingId',
                 element: <Listing />
+            },
+            {
+                path: '/search',
+                element: <Search />
             },
             {
                 element: <PrivateRoute />,
