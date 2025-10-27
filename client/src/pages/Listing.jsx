@@ -5,14 +5,16 @@ import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules'
 import 'swiper/css/bundle'
 import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from "react-icons/fa";
-
+import { useSelector } from 'react-redux';
+import Contact from '../components/Contact';
 const Listing = () => {
   //state
   const [listing, setListing] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [copied, setCopied] = useState(Boolean)
-
+  const [contact, setContact] = useState(false)
+  const { currentUser } = useSelector(state => state.user)
   const params = useParams()
   useEffect(() => {
     const fetchListing = async () => {
@@ -21,12 +23,10 @@ const Listing = () => {
         const res = await fetch(`/api/listing/get/${params.listingId}`)
         const data = await res.json()
         if (data.success === false) {
-
           setError(true)
           setLoading(false)
           return
         }
-
         setLoading(false)
         setListing(data)
       }
@@ -37,7 +37,6 @@ const Listing = () => {
     }
     fetchListing()
   }, [params.listingId])
-
   return (
     <main>
       {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
@@ -88,41 +87,41 @@ const Listing = () => {
                   </p>
                 )
               }
-
             </div>
             <p className='text-slate-800'>
               <span className='font-semibold text-black'>
                 Description - {' '}
               </span>
               {listing.description}</p>
+            <ul className='text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6 '>
+              <li className='flex items-center gap-1 whitespace-nowrap '>
+                <FaBed className='text-lg' />
+                {listing.bedrooms > 1 ? `${listing.bedrooms} beds` : `${listing.bedrooms} bed`}
+              </li>
+              <li className='flex items-center gap-1 whitespace-nowrap '>
+                <FaBath className='text-lg' />
+                {listing.bathrooms > 1 ? `${listing.bathrooms} Baths` : `${listing.bathrooms} Bath`}
+              </li>
+              <li className='flex items-center gap-1 whitespace-nowrap '>
+                <FaParking className='text-lg' />
+                {listing.parking ? 'Parking Spot' : 'No Parking'}
+              </li>
+              <li className='flex items-center gap-1 whitespace-nowrap '>
+                <FaChair className='text-lg' />
+                {listing.furnished ? "Furnished" : 'Unfurnished'}
+              </li>
+            </ul>
+            {currentUser && !contact && listing.userRef !== currentUser._id && (
+              <button onClick={() => setContact(true)} className='bg-slate-700 text-white border rounded-lg uppercase hover:opacity-95 p-3'>
+                Contact Landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing} />}
 
-              <ul className='text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6 '>
-                <li className='flex items-center gap-1 whitespace-nowrap '>
-                  <FaBed className='text-lg' />
-                  {listing.bedrooms > 1 ? `${listing.bedrooms} beds` : `${listing.bedrooms} bed`}
-                </li>
-                 <li className='flex items-center gap-1 whitespace-nowrap '>
-                  <FaBath className='text-lg' />
-                  {listing.bathrooms > 1 ? `${listing.bathrooms} Baths` : `${listing.bathrooms} Bath`}
-                </li>
-                                 <li className='flex items-center gap-1 whitespace-nowrap '>
-                  <FaParking className='text-lg' />
-                  {listing.parking ? 'Parking Spot' : 'No Parking'}
-                </li>
-                                 <li className='flex items-center gap-1 whitespace-nowrap '>
-                  <FaChair className='text-lg' />
-                  {listing.furnished ? "Furnished" : 'Unfurnished'}
-                </li>
-              </ul>
           </div>
-
-
-
-
         </div>
       )}
     </main>
   )
 }
-
 export default Listing

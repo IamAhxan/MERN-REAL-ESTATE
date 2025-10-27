@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-
-
 const CreateListing = () => {
   const [files, setFiles] = useState([])
   const { currentUser } = useSelector(state => state.user)
@@ -19,7 +17,6 @@ const CreateListing = () => {
     offer: false,
     regularPrice: 50,
     discountedPrice: 0,
-
   })
   const [imageUploadError, setImageUploadError] = useState(null)
   const [uploading, setUploading] = useState(false)
@@ -28,11 +25,8 @@ const CreateListing = () => {
   // Cloudinary config (Vite env)
   const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL
   const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-
   const navigate = useNavigate()
-
   const handleImageSubmit = async () => {
-
     setUploading(true)
     setImageUploadError('')
     if (!files || files.length === 0) return
@@ -41,7 +35,6 @@ const CreateListing = () => {
       setImageUploadError(msg)
       return
     }
-
     try {
       const promises = files.map((f) => storeImage(f))
       const urls = await Promise.all(promises)
@@ -55,40 +48,30 @@ const CreateListing = () => {
       const message = err?.message || 'Image upload failed'
       setImageUploadError(message)
       setUploading(false)
-
     }
     setUploading(false)
   }
-
   const storeImage = async (file) => {
     if (!CLOUDINARY_URL || !UPLOAD_PRESET) {
-
       throw new Error(
         'Cloudinary config missing. Set VITE_CLOUDINARY_URL and VITE_CLOUDINARY_UPLOAD_PRESET in your .env'
       )
     }
-
     const data = new FormData()
     data.append('file', file)
     data.append('upload_preset', UPLOAD_PRESET)
-
     const res = await fetch(CLOUDINARY_URL, {
       method: 'POST',
       body: data
     })
-
     if (!res.ok) {
       const text = await res.text()
       throw new Error(`Cloudinary upload failed: ${text}`)
       setImageUploadError('Error Occurred During Image Upload')
-
     }
-
     const json = await res.json()
     return json.secure_url || json.url
     setImageUploadError(null)
-
-
   }
   const handleRemoveImage = (i) => {
     setFormData({
@@ -96,7 +79,6 @@ const CreateListing = () => {
       imageURLs: formData.imageURLs.filter((_, index) => index !== i),
     })
   }
-
   const handleChange = (e) => {
     if (e.target.id === 'sale' || e.target.id === 'rent') {
       setFormData({
@@ -120,16 +102,12 @@ const CreateListing = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if(formData.imageURLs.length === 0){
+      if (formData.imageURLs.length === 0) {
         return setError('Please upload at least one image')
       };
-
-      if(formData.regularPrice < +formData.discountedPrice){
+      if (formData.regularPrice < +formData.discountedPrice) {
         return setError('Discount price must be less than regular price')
       };
-
-      
-
       setLoading(true)
       setError(false)
       const res = await fetch('/api/listing/create', {
@@ -145,11 +123,10 @@ const CreateListing = () => {
       });
       const data = await res.json()
       setLoading(false)
-
       if (data.success === false) {
         setError(data.message)
       }
-     navigate(`/listing/${data.listing._id}`)
+      navigate(`/listing/${data.listing._id}`)
     } catch (error) {
       setError(data?.message)
       setLoading(false)
@@ -202,17 +179,16 @@ const CreateListing = () => {
               </div>
             </div>
             {(formData.offer) && (
-            <div className='flex items-center gap-2'>
-              <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountedPrice' min='0' max='1000000' onChange={handleChange} value={formData.discountedPrice} />
-              <div className='flex flex-col items-center'>
-                <p>Discounted Price</p>
-                <span>($ / Months)</span>
+              <div className='flex items-center gap-2'>
+                <input className='bg-white p-3 border border-gray-300 rounded-lg ' type='number' id='discountedPrice' min='0' max='1000000' onChange={handleChange} value={formData.discountedPrice} />
+                <div className='flex flex-col items-center'>
+                  <p>Discounted Price</p>
+                  <span>($ / Months)</span>
+                </div>
               </div>
-            </div>
             )}
           </div>
         </div>
-
         <div className='flex flex-col flex-1 gap-4'>
           <p className='font-semibold '>
             Images:<span className='text-gray-600 font-normal ml-2'>The first image will be the cover (max 6)</span>
@@ -223,8 +199,6 @@ const CreateListing = () => {
           </div>
           <button disabled={loading || uploading} className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? '...Loading' : 'Create Listing'}</button>
           {error && <p className='text-red-700'>{error}</p>}
-
-
           {formData.imageURLs && formData.imageURLs.length > 0 && (
             <div className='mt-3'>
               <p className='font-medium'>Uploaded images:</p>
@@ -244,5 +218,4 @@ const CreateListing = () => {
     </main>
   )
 }
-
 export default CreateListing
