@@ -1,8 +1,12 @@
 import React from 'react'
 const About = () => {
   return (
-    <div>
-      <h1></h1>
+    <div className='py-20 px-4 max-w-6xl mx-auto'>
+      <h1 className='text-3xl font-bold mb-4 text-slate-800'>About Ahsan Estate</h1>
+      <p className='mb-4 text-slate-700'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat quod nostrum corporis distinctio doloribus nisi consequatur. Placeat quibusdam itaque numquam tempora, voluptatem voluptatum repellat et provident eveniet fugit, quam nisi.</p>
+      <p className='mb-4 text-slate-700'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Animi sit labore officia quaerat omnis nobis blanditiis dicta alias eaque modi fugiat aperiam ab corporis quis soluta, rerum iste, quibusdam assumenda possimus ipsam similique sed? Quod, error incidunt repellat laboriosam, neque quo illum, ut omnis repellendus rerum quidem voluptates possimus aliquid laborum libero dignissimos pariatur. Ipsum hic quibusdam mollitia esse! Neque cum assumenda deserunt dolorem voluptate beatae eveniet maxime aperiam adipisci ex fuga facilis numquam molestiae vero, ea doloremque? Quos ullam ex illum est totam illo, dicta quasi doloribus nulla beatae tempore similique atque, quisquam obcaecati, magnam nobis. Quae, dolor ex!</p>
+      <p className='mb-4 text-slate-700'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem odio libero laboriosam maxime obcaecati velit unde quia sunt assumenda voluptatum? Dolorum itaque reprehenderit harum illo asperiores quae excepturi repellendus labore, temporibus, atque quas. Unde, asperiores. Aliquam id autem architecto itaque explicabo, maxime optio laboriosam eius vitae! Atque, earum distinctio, suscipit ex ipsa in est voluptatum quidem ipsam voluptate neque a excepturi cupiditate non dignissimos nobis, optio ut et iure consequuntur delectus repudiandae ratione possimus nesciunt. Iusto ipsam saepe, nihil quis, minus iure praesentium expedita, animi aspernatur vero rerum? Quod iste incidunt autem dicta quia facilis labore illum ea culpa aut quisquam, laudantium repellat vero nihil numquam. Dolorum quisquam numquam voluptatum rerum voluptatibus, saepe nam nostrum, voluptate voluptates distinctio ex! Ipsam cum, sit dolorem facilis, nesciunt, consequatur et officia veniam debitis voluptatem culpa dicta? Laudantium autem eum dolorum unde perferendis animi dicta architecto doloremque ex repellat nostrum aut, at officia officiis neque incidunt libero illum magnam facilis explicabo quam labore itaque ea. Impedit, ut sapiente. Iure quos eos sit vero laborum. Atque, quidem officia earum iste, veritatis placeat inventore nulla pariatur sapiente corporis commodi voluptatibus et iure distinctio at quo cupiditate reprehenderit ipsam harum minus! Nihil error fugiat cum neque quod.
+      </p>
     </div>
   )
 }
