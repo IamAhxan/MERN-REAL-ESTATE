@@ -13,7 +13,7 @@ const OAuth = () => {
             const provider = new GoogleAuthProvider()
             const auth = getAuth(app)
             const result = await signInWithPopup(auth, provider)
-            const res = await fetch('/api/auth/google', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -23,8 +23,8 @@ const OAuth = () => {
                 }),
             });
             const data = await res.json()
-                 dispatch(signInSuccess(data))
-                 navigate('/')
+            dispatch(signInSuccess(data))
+            navigate('/')
         } catch (error) {
             console.log('could not sign in, error:' + error.message)
         }

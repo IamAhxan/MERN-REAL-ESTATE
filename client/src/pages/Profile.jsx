@@ -53,7 +53,7 @@ const Profile = () => {
     dispatch(updateUserStart());
     try {
       const res = await fetch(
-        `/api/user/update/${currentUser._id}`,
+        `${import.meta.env.VITE_API_URL}/api/user/update/${currentUser._id}`,
         {
           method: "POST", // or "PUT" if your backend expects it
           headers: {
@@ -77,7 +77,7 @@ const Profile = () => {
   const handleDelete = async () => {
     try {
       dispatch(deleteUserStart())
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -94,7 +94,7 @@ const Profile = () => {
   const handleSignout = async () => {
     try {
       dispatch(signOutUserStart())
-      const res = await fetch('/api/auth/signout')
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signout`)
       const data = await res.json()
       if (data.success === false) {
         return
@@ -107,7 +107,7 @@ const Profile = () => {
   const handleShowListings = async () => {
     try {
       setShowListingError(false)
-      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/listings/${currentUser._id}`);
       const data = await res.json()
       if (data.success === false) {
         setShowListingError(true);
@@ -120,7 +120,7 @@ const Profile = () => {
   }
   const handleListingDelete = async (listingId) => {
     try {
-      const res = await fetch(`/api/listing/delete/${listingId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/delete/${listingId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

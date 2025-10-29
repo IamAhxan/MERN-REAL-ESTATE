@@ -17,7 +17,7 @@ const SignUp = () => {
     try {
       setLoading(true);
       setError(null); // ✅ clear old error before new submit
-      const res = await fetch('/api/auth/signup', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
