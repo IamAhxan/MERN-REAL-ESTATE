@@ -108,8 +108,10 @@ const CreateListing = () => {
       if (formData.regularPrice < +formData.discountedPrice) {
         return setError('Discount price must be less than regular price')
       };
+
       setLoading(true)
       setError(false)
+
       const res = await fetch('/api/listing/create', {
         method: 'POST',
         headers: {
@@ -121,14 +123,28 @@ const CreateListing = () => {
           userRef: currentUser._id
         })
       });
+
+      // 1. You successfully moved this to the correct position!
       const data = await res.json()
+
       setLoading(false)
+
+      // 2. Add a 'return' here. If the API call fails (data.success === false),
+      // we must stop execution and not try to navigate.
       if (data.success === false) {
         setError(data.message)
+        return
       }
-      navigate(`/listing/${data.listing._id}`)
+
+      // 3. ONLY navigate if the request was successful
+      // (and assuming data contains { listing: { _id: '...' } })
+      navigate(`/listing/${data._id}`)
+
     } catch (error) {
-      setError(data?.message)
+      // 4. FIX: 'data' is NOT defined in the scope of the catch block. 
+      // Use the 'error' object itself to set the error message.
+      console.error(error); // Log the error for debugging
+      setError(error.message || 'An unexpected error occurred.')
       setLoading(false)
     }
   }
