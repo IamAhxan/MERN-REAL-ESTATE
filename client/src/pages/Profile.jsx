@@ -104,17 +104,52 @@ const Profile = () => {
       dispatch(signOutUserFailure(error.message))
     }
   }
+  // const handleShowListings = async () => {
+  //   try {
+  //     setShowListingError(false)
+  //     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/listings/${currentUser._id}`);
+  //     const data = await res.json()
+  //     if (data.success === false) {
+  //       setShowListingError(true);
+  //       return
+  //     }
+  //     setUserListing(data);
+  //   } catch (error) {
+  //     setShowListingError(true)
+  //   }
+  // }
   const handleShowListings = async () => {
     try {
       setShowListingError(false)
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/listings/${currentUser._id}`);
-      const data = await res.json()
-      if (data.success === false) {
-        setShowListingError(true);
+
+      if (!currentUser?._id || !currentUser?.token) {
+        setShowListingError(true)
         return
       }
-      setUserListing(data);
+
+      const API = import.meta.env.VITE_API_URL || 'https://mern-real-estate-api-black.vercel.app'
+      const res = await fetch(`${API}/api/user/listings/${currentUser._id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        credentials: 'include' // keep if backend uses cookie tokens
+      });
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        // backend returns { message } on auth errors
+        console.error('Show listings error:', data)
+        setShowListingError(true)
+        return
+      }
+
+      // API returns an array of listings
+      setUserListing(Array.isArray(data) ? data : (data.listings || []))
     } catch (error) {
+      console.error(error)
       setShowListingError(true)
     }
   }
