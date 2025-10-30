@@ -29,10 +29,11 @@ export const signin = async (req, res, next) => {
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = validUser._doc;
 
-    res.cookie("access_token", token, {
+    res.cookie('access_token', token, {
       httpOnly: true,
-      secure: false, // true only if using HTTPS
-      sameSite: "lax", // ✅ allows localhost:5173 to send cookie
+      secure: true, // MUST be true in production (Vercel)
+      sameSite: 'None', // MUST be 'None' for cross-domain cookies
+      // Consider adding expires: new Date(Date.now() + 3600000) for a 1-hour expiration
     }).status(200).json(rest);
 
   } catch (error) {
@@ -47,13 +48,14 @@ export const google = async (req, res, next) => {
     if (user) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = user._doc;
-      res.cookie("access_token", token, {
+      res.cookie('access_token', token, {
         httpOnly: true,
-        sameSite: "lax",
-        secure: false,
+        secure: true, // MUST be true in production (Vercel)
+        sameSite: 'None', // MUST be 'None' for cross-domain cookies
+        // Consider adding expires: new Date(Date.now() + 3600000) for a 1-hour expiration
       })
-      .status(200)
-      .json(rest);
+        .status(200)
+        .json(rest);
     } else {
       const generatedPassword =
         Math.random().toString(36).slice(-8) +
@@ -74,8 +76,8 @@ export const google = async (req, res, next) => {
         sameSite: "lax",
         secure: false,
       })
-      .status(200)
-      .json(rest);
+        .status(200)
+        .json(rest);
     }
   } catch (error) {
     next(error);
@@ -92,4 +94,4 @@ export const signout = (req, res, next) => {
   } catch (error) {
     next(error);
   }
-  }
+}
