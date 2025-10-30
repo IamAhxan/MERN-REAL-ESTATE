@@ -118,100 +118,119 @@ const Profile = () => {
   //     setShowListingError(true)
   //   }
   // }
+  // ...existing code...
   const handleShowListings = async () => {
-    try {
-      setShowListingError(false)
+    const handleShowListings = async () => {
+      try {
+        setShowListingError(false)
 
-      // No need to check currentUser?.token if relying on cookie
-      // The backend's verifyToken will handle the auth check
+        // No need to check currentUser?.token if relying on cookie
+        // The backend's verifyToken will handle the auth check
 
-      const API = import.meta.env.VITE_API_URL || 'https://mern-real-estate-api-black.vercel.app'
-      const res = await fetch(`${API}/api/user/listings/${currentUser._id}`, {
-        method: 'GET',
-        // REMOVE THIS SECTION ❌
-        // headers: { 
-        //   'Content-Type': 'application/json',
-        //   'Authorization': `Bearer ${currentUser.token}`
-        // },
-        credentials: 'include' // <-- This is what the backend expects
-      });
+        const API = import.meta.env.VITE_API_URL || 'https://mern-real-estate-api-black.vercel.app'
+        const res = await fetch(`${API}/api/user/listings/${currentUser._id}`, {
+          method: 'GET',
+          // REMOVE THIS SECTION ❌
+          // headers: { 
+          //   'Content-Type': 'application/json',
+          //   'Authorization': `Bearer ${currentUser.token}`
+          // },
+          credentials: 'include' // <-- This is what the backend expects
+        });
 
-      const data = await res.json()
-      // ... rest of the code
-      const handleListingDelete = async (listingId) => {
-        try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/delete/${listingId}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${currentUser.token}`,
-            },
-            credentials: 'include'
-          });
-          const data = await res.json();
-          if (data.success === false) {
-            console.log(data.message)
-            return;
-          }
-          setUserListing((prev) => prev.filter((listing) => listing._id !== listingId))
-        } catch (error) {
-          console.log(error)
+        const data = await res.json()
+        // ... rest of the code
+
+        if (!res.ok) {
+          // backend returns { message } on auth errors
+          console.error('Show listings error:', data)
+          setShowListingError(true)
+          return
         }
+
+        // API returns an array of listings
+        setUserListing(Array.isArray(data) ? data : (data.listings || []))
+      } catch (error) {
+        console.error(error)
+        setShowListingError(true)
       }
-      return (
-        <div className="p-3 max-w-lg mx-auto">
-          <h1 className='text-3xl font-semibold text-center my-7'>
-            Profile
-          </h1>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <input onChange={(e) => setFile(e.target.files[0])} hidden type="file" ref={fileRef} accept="image/*" />
-            <img onClick={() => fileRef.current.click()} src={formData.avatar || currentUser.avatar} alt="profile" className="rounded-full h-24 w-24 object-cover cursor-pointer self-center" />
-            {
-              fileUploadError ? (
-                <span className="text-red-700">Error Image Upload(image must be less than 2mb)</span>
-              ) : filePerc > 0 && filePerc < 100 ? (
-                <span className="text-slate-700">{`Uploading ${filePerc}%`}</span>
-              ) : filePerc === 100 ? (
-                <span className="text-green-700">Uploaded successfully</span>
-              ) : null
-            }
-            <input onChange={handleChange} type="text" placeholder="Username" defaultValue={currentUser.username} className="border p-3 rounded-lg" id="username" />
-            <input onChange={handleChange} type="email" placeholder="email" defaultValue={currentUser.email} className="border p-3 rounded-lg" id="email" />
-            <input onChange={handleChange} type="password" placeholder="password" defaultValue={currentUser.password} className="border p-3 rounded-lg" id="password" />
-            <button disabled={loading} className="bg-slate-700 rounded-lg text-white p-3 uppercase hover:opacity-95 disabled:opacity-80">{loading ? 'Loading...' : 'Update'}</button>
-            <Link to={"/create-listing"} className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95">Create Listing</Link>
-          </form>
-          <div className="flex justify-between">
-            <span onClick={handleDelete} className="text-red-700 cursor-pointer">Delete Account</span>
-            <span onClick={handleSignout} className="text-red-700 cursor-pointer">Sign out</span>
-          </div>
-          <p className="text-red-700 mt-5">{error ? error : ""}</p>
-          <p className="text-green-700 mt-5">{updateSuccess ? 'User Updated Successfully' : ""}</p>
-          <button onClick={handleShowListings} className="text-green-700 w-full">Show Listings</button>
-          <p className="text-red-700">{showListingsError ? 'Error Showing Listings' : ''}</p>
-          {userListing &&
-            userListing.length > 0 && (
-              <div className="flex flex-col gap-4">
-                <h1 className="text-center mt-7 text-2xl font-semibold">Your Listings</h1>
-                {userListing.map((listing) => (
-                  <div key={listing._id} className="border rounded-lg p-3 flex justify-between items-center">
-                    <Link to={`/listing/${listing._id}`}>
-                      <img className='h-16 w-16 object-contain' src={listing.imageURLs[0]} alt="Listing Cover" />
-                    </Link>
-                    <Link to={`/listing/${listing._id}`} className="text-slate-700 font-semibold flex-1 hover:underline truncate">
-                      <p >{listing.name}</p>
-                    </Link>
-                    <div className="flex flex-col">
-                      <button onClick={() => handleListingDelete(listing._id)} className="text-red-700 uppercase">Delete</button>
-                      <Link to={`/update-listing/${listing._id}`}>
-                        <button className="text-green-700 uppercase">Edit</button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-        </div>
-      )
     }
+  }
+  // ...existing code...
+  const handleListingDelete = async (listingId) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/delete/${listingId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message)
+        return;
+      }
+      setUserListing((prev) => prev.filter((listing) => listing._id !== listingId))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  return (
+    <div className="p-3 max-w-lg mx-auto">
+      <h1 className='text-3xl font-semibold text-center my-7'>
+        Profile
+      </h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <input onChange={(e) => setFile(e.target.files[0])} hidden type="file" ref={fileRef} accept="image/*" />
+        <img onClick={() => fileRef.current.click()} src={formData.avatar || currentUser.avatar} alt="profile" className="rounded-full h-24 w-24 object-cover cursor-pointer self-center" />
+        {
+          fileUploadError ? (
+            <span className="text-red-700">Error Image Upload(image must be less than 2mb)</span>
+          ) : filePerc > 0 && filePerc < 100 ? (
+            <span className="text-slate-700">{`Uploading ${filePerc}%`}</span>
+          ) : filePerc === 100 ? (
+            <span className="text-green-700">Uploaded successfully</span>
+          ) : null
+        }
+        <input onChange={handleChange} type="text" placeholder="Username" defaultValue={currentUser.username} className="border p-3 rounded-lg" id="username" />
+        <input onChange={handleChange} type="email" placeholder="email" defaultValue={currentUser.email} className="border p-3 rounded-lg" id="email" />
+        <input onChange={handleChange} type="password" placeholder="password" defaultValue={currentUser.password} className="border p-3 rounded-lg" id="password" />
+        <button disabled={loading} className="bg-slate-700 rounded-lg text-white p-3 uppercase hover:opacity-95 disabled:opacity-80">{loading ? 'Loading...' : 'Update'}</button>
+        <Link to={"/create-listing"} className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95">Create Listing</Link>
+      </form>
+      <div className="flex justify-between">
+        <span onClick={handleDelete} className="text-red-700 cursor-pointer">Delete Account</span>
+        <span onClick={handleSignout} className="text-red-700 cursor-pointer">Sign out</span>
+      </div>
+      <p className="text-red-700 mt-5">{error ? error : ""}</p>
+      <p className="text-green-700 mt-5">{updateSuccess ? 'User Updated Successfully' : ""}</p>
+      <button onClick={handleShowListings} className="text-green-700 w-full">Show Listings</button>
+      <p className="text-red-700">{showListingsError ? 'Error Showing Listings' : ''}</p>
+      {userListing &&
+        userListing.length > 0 && (
+          <div className="flex flex-col gap-4">
+            <h1 className="text-center mt-7 text-2xl font-semibold">Your Listings</h1>
+            {userListing.map((listing) => (
+              <div key={listing._id} className="border rounded-lg p-3 flex justify-between items-center">
+                <Link to={`/listing/${listing._id}`}>
+                  <img className='h-16 w-16 object-contain' src={listing.imageURLs[0]} alt="Listing Cover" />
+                </Link>
+                <Link to={`/listing/${listing._id}`} className="text-slate-700 font-semibold flex-1 hover:underline truncate">
+                  <p >{listing.name}</p>
+                </Link>
+                <div className="flex flex-col">
+                  <button onClick={() => handleListingDelete(listing._id)} className="text-red-700 uppercase">Delete</button>
+                  <Link to={`/update-listing/${listing._id}`}>
+                    <button className="text-green-700 uppercase">Edit</button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+    </div>
+  )
+}
 export default Profile
