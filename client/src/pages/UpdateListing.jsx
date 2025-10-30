@@ -129,6 +129,7 @@ const UpdateListing = () => {
           "content-type": "application/json",
           Authorization: `Bearer ${currentUser.token}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
           userRef: currentUser._id,
