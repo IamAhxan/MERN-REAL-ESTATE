@@ -114,10 +114,10 @@ const CreateListing = () => {
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/create`, {
         method: 'POST',
-        // headers: {
-        //   'content-type': 'application/json',
-        //   'Authorization': `Bearer ${currentUser.token}`,
-        // },
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`,
+        },
         credentials: 'include',
         body: JSON.stringify({
           ...formData,
