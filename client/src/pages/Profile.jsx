@@ -126,6 +126,7 @@ const Profile = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${currentUser.token}`,
         },
+        credentials: 'include'
       });
       const data = await res.json();
       if (data.success === false) {
