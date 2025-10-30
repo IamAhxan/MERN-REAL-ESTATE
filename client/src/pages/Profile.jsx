@@ -120,41 +120,40 @@ const Profile = () => {
   // }
   // ...existing code...
   const handleShowListings = async () => {
-    const handleShowListings = async () => {
-      try {
-        setShowListingError(false)
+    try {
+      setShowListingError(false)
 
-        // No need to check currentUser?.token if relying on cookie
-        // The backend's verifyToken will handle the auth check
+      // No need to check currentUser?.token if relying on cookie
+      // The backend's verifyToken will handle the auth check
 
-        const API = import.meta.env.VITE_API_URL || 'https://mern-real-estate-api-black.vercel.app'
-        const res = await fetch(`${API}/api/user/listings/${currentUser._id}`, {
-          method: 'GET',
-          // REMOVE THIS SECTION ❌
-          // headers: { 
-          //   'Content-Type': 'application/json',
-          //   'Authorization': `Bearer ${currentUser.token}`
-          // },
-          credentials: 'include' // <-- This is what the backend expects
-        });
+      const API = import.meta.env.VITE_API_URL || 'https://mern-real-estate-api-black.vercel.app'
+      const res = await fetch(`${API}/api/user/listings/${currentUser._id}`, {
+        method: 'GET',
+        // REMOVE THIS SECTION ❌
+        // headers: { 
+        //   'Content-Type': 'application/json',
+        //   'Authorization': `Bearer ${currentUser.token}`
+        // },
+        credentials: 'include' // <-- This is what the backend expects
+      });
 
-        const data = await res.json()
-        // ... rest of the code
+      const data = await res.json()
+      // ... rest of the code
 
-        if (!res.ok) {
-          // backend returns { message } on auth errors
-          console.error('Show listings error:', data)
-          setShowListingError(true)
-          return
-        }
-
-        // API returns an array of listings
-        setUserListing(Array.isArray(data) ? data : (data.listings || []))
-      } catch (error) {
-        console.error(error)
+      if (!res.ok) {
+        // backend returns { message } on auth errors
+        console.error('Show listings error:', data)
         setShowListingError(true)
+        return
       }
+
+      // API returns an array of listings
+      setUserListing(Array.isArray(data) ? data : (data.listings || []))
+    } catch (error) {
+      console.error(error)
+      setShowListingError(true)
     }
+
   }
   // ...existing code...
   const handleListingDelete = async (listingId) => {
