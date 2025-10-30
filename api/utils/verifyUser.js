@@ -2,15 +2,31 @@ import jwt from "jsonwebtoken";
 import { errorHandler } from "../utils/error.js";
 
 export const verifyToken = (req, res, next) => {
-  const token =
-    req.cookies.access_token ||
-    req.headers.authorization?.split(" ")[1];
+  try {
+    // ✅ Prefer cookie, fallback to Authorization header
+    const token =
+      req.cookies?.access_token ||
+      (req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : null);
 
-  if (!token) return next(errorHandler(401, "Unauthorized"));
+    if (!token) {
+      console.log("❌ No token found");
+      return next(errorHandler(401, "Unauthorized"));
+    }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return next(errorHandler(403, "Forbidden"));
-    req.user = user;
-    next();
-  });
+    // ✅ Verify JWT
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        console.log("❌ Invalid or expired token:", err.message);
+        return next(errorHandler(403, "Forbidden"));
+      }
+
+      // ✅ Attach decoded user (contains id)
+      req.user = decoded;
+      next();
+    });
+  } catch (error) {
+    next(errorHandler(500, "Token verification failed"));
+  }
 };

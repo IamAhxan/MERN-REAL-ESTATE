@@ -10,12 +10,23 @@ import listingRoutes from './routes/listing.route.js';
 dotenv.config();
 const app = express();
 
-const allowedOrigins = ['http://localhost:5173', 'https://mern-real-estate-client.vercel.app'];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mern-real-estate-client.vercel.app"
+];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true, // ✅ allow cookies
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // ✅ allow cookies to be sent
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 
